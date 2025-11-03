@@ -20,3 +20,9 @@ export interface IdleTimerState {
   idleTime: number;
   isMouseOnPage: boolean;
 }
+
+export interface FeatureToggle {
+  rotation: boolean;
+  scaling: boolean;
+  idle: boolean;
+}
