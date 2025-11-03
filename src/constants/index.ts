@@ -10,3 +10,9 @@ export const SCALING_CONFIG: ScalingConfig = {
   maxSize: 200,
   baseSize: 100,
 } as const;
+
+export const IDLE_TIMER_CONFIG = {
+  UPDATE_INTERVAL_MS: 100,
+  MOVEMENT_THRESHOLD_PX: 1,
+  TIME_UNIT_MS: 1000,
+} as const;

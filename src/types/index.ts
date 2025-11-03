@@ -15,3 +15,8 @@ export interface ScalingConfig {
   maxSize: number;
   baseSize: number;
 }
+
+export interface IdleTimerState {
+  idleTime: number;
+  isMouseOnPage: boolean;
+}
