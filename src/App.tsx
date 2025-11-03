@@ -1,8 +1,10 @@
 import { useRotation } from './hooks/useRotation';
+import { useScaling } from './hooks/useScaling';
 import { ReactIcon } from './components/ReactIcon';
 
 function App() {
   const { rotationState, toggleDirection } = useRotation({ enabled: true });
+  const { iconSize } = useScaling({ enabled: true });
 
   return (
     <div style={{ 
@@ -12,8 +14,9 @@ function App() {
       minHeight: '100vh' 
     }}>
       <ReactIcon
-        size={100}
+        size={iconSize}
         rotationState={rotationState}
+        isScalingEnabled={true}
         onClick={toggleDirection}
       />
     </div>

@@ -5,12 +5,14 @@ import type { RotationState } from '../../types';
 interface ReactIconProps {
   size: number;
   rotationState: RotationState;
+  isScalingEnabled: boolean;
   onClick: () => void;
 }
 
 export const ReactIcon = ({
   size,
   rotationState,
+  isScalingEnabled,
   onClick,
 }: ReactIconProps) => {
   const style: CSSProperties = {
@@ -18,6 +20,7 @@ export const ReactIcon = ({
     width: `${size}px`,
     transform: `rotate(${rotationState.angle}deg)`,
     cursor: 'pointer',
+    transition: isScalingEnabled ? 'height 0.1s ease, width 0.1s ease' : 'none',
   };
 
   return (
