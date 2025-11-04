@@ -16,6 +16,15 @@ interface FeatureToggleItemProps {
   onChange: () => void;
 }
 
+/**
+ * Individual feature toggle item component.
+ * Includes proper label association for accessibility.
+ *
+ * @param props - Component props
+ * @param props.label - Label text for the toggle
+ * @param props.checked - Whether the toggle is checked
+ * @param props.onChange - Change handler
+ */
 const FeatureToggleItem = ({ label, checked, onChange }: FeatureToggleItemProps) => {
   const labelStyle: CSSProperties = {
     display: 'block',
@@ -24,15 +33,34 @@ const FeatureToggleItem = ({ label, checked, onChange }: FeatureToggleItemProps)
     cursor: 'pointer',
   };
 
+  const inputId = `toggle-${label.toLowerCase().replace(/\s+/g, '-')}`;
+
   return (
-    <label style={labelStyle}>
-      <input type="checkbox" checked={checked} onChange={onChange} />
+    <label htmlFor={inputId} style={labelStyle}>
+      <input
+        id={inputId}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        aria-label={`Toggle ${label}`}
+      />
       {' '}
       {label}
     </label>
   );
 };
 
+/**
+ * Sidebar component that contains feature toggles.
+ *
+ * @param props - Component props
+ * @param props.isOpen - Whether the sidebar is open
+ * @param props.setIsOpen - Function to set sidebar open state
+ * @param props.rotation - Whether rotation feature is enabled
+ * @param props.scaling - Whether scaling feature is enabled
+ * @param props.idle - Whether idle timer feature is enabled
+ * @param props.onToggle - Function to toggle individual features
+ */
 export const Sidebar = ({ isOpen, rotation, scaling, idle, onToggle }: SidebarProps) => {
   const sidebarStyle: CSSProperties = {
     position: 'fixed',
@@ -55,7 +83,12 @@ export const Sidebar = ({ isOpen, rotation, scaling, idle, onToggle }: SidebarPr
   };
 
   return (
-    <div style={sidebarStyle}>
+    <nav
+      id="sidebar"
+      style={sidebarStyle}
+      aria-label="Feature settings"
+      aria-hidden={!isOpen}
+    >
       <h2 style={titleStyle}>Features</h2>
       <FeatureToggleItem
         label="Rotation"
@@ -72,7 +105,7 @@ export const Sidebar = ({ isOpen, rotation, scaling, idle, onToggle }: SidebarPr
         checked={idle}
         onChange={() => onToggle('idle')}
       />
-    </div>
+    </nav>
   );
 };
 

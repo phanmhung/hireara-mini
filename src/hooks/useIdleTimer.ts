@@ -11,6 +11,122 @@ interface UseIdleTimerReturn {
   idleState: IdleTimerState;
 }
 
+/**
+ * Checks if a mouse position is within the viewport bounds.
+ *
+ * @param pos - Mouse position to check
+ * @returns True if position is within viewport
+ */
+const isPositionOnPage = (pos: Position): boolean => {
+  return (
+    pos.x >= 0 &&
+    pos.x <= window.innerWidth &&
+    pos.y >= 0 &&
+    pos.y <= window.innerHeight
+  );
+};
+
+/**
+ * Handles mouse movement events and updates idle timer state accordingly.
+ *
+ * @param e - Mouse event
+ * @param lastMousePosRef - Reference to last mouse position
+ * @param lastMouseMoveRef - Reference to last mouse move timestamp
+ * @param isMouseOnPageRef - Reference to mouse on page state
+ * @param setIsMouseOnPage - State setter for mouse on page
+ * @param setIdleTime - State setter for idle time
+ */
+const handleMouseMove = (
+  e: MouseEvent,
+  lastMousePosRef: React.MutableRefObject<Position>,
+  lastMouseMoveRef: React.MutableRefObject<number>,
+  isMouseOnPageRef: React.MutableRefObject<boolean>,
+  setIsMouseOnPage: (value: boolean) => void,
+  setIdleTime: (value: number) => void
+): void => {
+  const currentPos: Position = { x: e.clientX, y: e.clientY };
+
+  if (!isPositionOnPage(currentPos)) {
+    if (isMouseOnPageRef.current) {
+      setIsMouseOnPage(false);
+    }
+    setIdleTime(0);
+    return;
+  }
+
+  if (!isMouseOnPageRef.current) {
+    setIsMouseOnPage(true);
+    lastMouseMoveRef.current = Date.now();
+    setIdleTime(0);
+    lastMousePosRef.current = currentPos;
+    return;
+  }
+
+  // Check if mouse moved beyond threshold
+  if (
+    hasMouseMoved(
+      currentPos,
+      lastMousePosRef.current,
+      IDLE_TIMER_CONFIG.MOVEMENT_THRESHOLD_PX
+    )
+  ) {
+    lastMouseMoveRef.current = Date.now();
+    setIdleTime(0);
+    lastMousePosRef.current = currentPos;
+  }
+};
+
+/**
+ * Handles visibility change events (tab switching).
+ *
+ * @param documentHidden - Whether document is hidden
+ * @param setIsMouseOnPage - State setter for mouse on page
+ * @param setIdleTime - State setter for idle time
+ * @param lastMouseMoveRef - Reference to last mouse move timestamp
+ */
+const handleVisibilityChange = (
+  documentHidden: boolean,
+  setIsMouseOnPage: (value: boolean) => void,
+  setIdleTime: (value: number) => void,
+  lastMouseMoveRef: React.MutableRefObject<number>
+): void => {
+  if (documentHidden) {
+    setIsMouseOnPage(false);
+    setIdleTime(0);
+  } else {
+    setIsMouseOnPage(true);
+    lastMouseMoveRef.current = Date.now();
+  }
+};
+
+/**
+ * Handles mouse leave events.
+ *
+ * @param setIsMouseOnPage - State setter for mouse on page
+ * @param setIdleTime - State setter for idle time
+ */
+const handleMouseLeave = (
+  setIsMouseOnPage: (value: boolean) => void,
+  setIdleTime: (value: number) => void
+): void => {
+  setIsMouseOnPage(false);
+  setIdleTime(0);
+};
+
+/**
+ * Custom hook that tracks idle time (time mouse has been on page but not moving).
+ * Timer resets when mouse moves beyond threshold or leaves the page.
+ *
+ * @param options - Configuration options
+ * @param options.enabled - Whether the idle timer is enabled
+ * @returns Object containing idleState with idleTime and isMouseOnPage
+ *
+ * @example
+ * ```tsx
+ * const { idleState } = useIdleTimer({ enabled: true });
+ * console.log(`Idle for ${idleState.idleTime} seconds`);
+ * ```
+ */
 export const useIdleTimer = ({ enabled }: UseIdleTimerOptions): UseIdleTimerReturn => {
   const [idleTime, setIdleTime] = useState(0);
   const [isMouseOnPage, setIsMouseOnPage] = useState(true);
@@ -34,61 +150,27 @@ export const useIdleTimer = ({ enabled }: UseIdleTimerOptions): UseIdleTimerRetu
     }
 
     const handleMouseMoveWithTracking = (e: MouseEvent) => {
-      const currentPos: Position = { x: e.clientX, y: e.clientY };
-      
-      const isOnPage = 
-        currentPos.x >= 0 && 
-        currentPos.x <= window.innerWidth &&
-        currentPos.y >= 0 && 
-        currentPos.y <= window.innerHeight;
-
-      if (!isOnPage) {
-        if (isMouseOnPageRef.current) {
-          setIsMouseOnPage(false);
-        }
-        setIdleTime(0);
-        return;
-      }
-
-      if (!isMouseOnPageRef.current) {
-        setIsMouseOnPage(true);
-        lastMouseMoveRef.current = Date.now();
-        setIdleTime(0);
-        lastMousePosRef.current = currentPos;
-        return;
-      }
-
-      if (
-        hasMouseMoved(
-          currentPos,
-          lastMousePosRef.current,
-          IDLE_TIMER_CONFIG.MOVEMENT_THRESHOLD_PX
-        )
-      ) {
-        lastMouseMoveRef.current = Date.now();
-        setIdleTime(0);
-        lastMousePosRef.current = currentPos;
-      }
+      handleMouseMove(
+        e,
+        lastMousePosRef,
+        lastMouseMoveRef,
+        isMouseOnPageRef,
+        setIsMouseOnPage,
+        setIdleTime
+      );
     };
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setIsMouseOnPage(false);
-        setIdleTime(0);
-      } else {
-        setIsMouseOnPage(true);
-        lastMouseMoveRef.current = Date.now();
-      }
+    const handleVisibilityChangeEvent = () => {
+      handleVisibilityChange(document.hidden, setIsMouseOnPage, setIdleTime, lastMouseMoveRef);
     };
 
-    const handleMouseLeave = () => {
-      setIsMouseOnPage(false);
-      setIdleTime(0);
+    const handleMouseLeaveEvent = () => {
+      handleMouseLeave(setIsMouseOnPage, setIdleTime);
     };
 
     document.addEventListener('mousemove', handleMouseMoveWithTracking);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('mouseleave', handleMouseLeaveEvent);
+    document.addEventListener('visibilitychange', handleVisibilityChangeEvent);
 
     intervalRef.current = window.setInterval(() => {
       if (isMouseOnPageRef.current) {
@@ -101,8 +183,8 @@ export const useIdleTimer = ({ enabled }: UseIdleTimerOptions): UseIdleTimerRetu
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMoveWithTracking);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('mouseleave', handleMouseLeaveEvent);
+      document.removeEventListener('visibilitychange', handleVisibilityChangeEvent);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }

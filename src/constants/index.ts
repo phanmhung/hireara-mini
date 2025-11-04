@@ -7,7 +7,7 @@ export const ROTATION_CONFIG = {
 
 export const SCALING_CONFIG: ScalingConfig = {
   minSize: 50,
-  maxSize: 200,
+  maxSize: 500,
   baseSize: 100,
 } as const;
 

@@ -11,6 +11,15 @@ interface UseRotationReturn {
   toggleDirection: () => void;
 }
 
+/**
+ * Custom hook that manages icon rotation animation.
+ * Continuously rotates the icon and allows toggling rotation direction.
+ *
+ * @param options - Configuration options
+ * @param options.enabled - Whether rotation is enabled
+ * @returns Object containing rotationState (angle, direction) and toggleDirection function
+ *
+ */
 export const useRotation = ({ enabled }: UseRotationOptions): UseRotationReturn => {
   const [direction, setDirection] = useState<RotationDirection>(1);
   const [angle, setAngle] = useState(0);

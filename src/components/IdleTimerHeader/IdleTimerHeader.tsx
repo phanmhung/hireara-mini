@@ -5,6 +5,13 @@ interface IdleTimerHeaderProps {
   isEnabled: boolean;
 }
 
+/**
+ * Header component that displays idle timer information.
+ *
+ * @param props - Component props
+ * @param props.idleTime - Current idle time in seconds
+ * @param props.isEnabled - Whether the idle timer is enabled
+ */
 export const IdleTimerHeader = ({ idleTime, isEnabled }: IdleTimerHeaderProps) => {
   const containerStyle: CSSProperties = {
     position: 'fixed',
@@ -30,8 +37,10 @@ export const IdleTimerHeader = ({ idleTime, isEnabled }: IdleTimerHeaderProps) =
   };
 
   return (
-    <div style={containerStyle}>
-      <p style={textStyle}>Idle time: {idleTime}s</p>
+    <div style={containerStyle} role="status" aria-live="polite" aria-atomic="true">
+      <p style={textStyle}>
+        {isEnabled ? `Idle time: ${idleTime}s` : ''}
+      </p>
     </div>
   );
 };

@@ -6,6 +6,13 @@ interface SidebarToggleProps {
   onToggle: () => void;
 }
 
+/**
+ * Button component that toggles sidebar visibility.
+ *
+ * @param props - Component props
+ * @param props.isOpen - Whether the sidebar is currently open
+ * @param props.onToggle - Function to call when button is clicked
+ */
 export const SidebarToggle = ({ isOpen, onToggle }: SidebarToggleProps) => {
   const style: CSSProperties = {
     position: 'fixed',
@@ -17,7 +24,13 @@ export const SidebarToggle = ({ isOpen, onToggle }: SidebarToggleProps) => {
   };
 
   return (
-    <button onClick={onToggle} style={style}>
+    <button
+      onClick={onToggle}
+      style={style}
+      aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+      aria-expanded={isOpen}
+      aria-controls="sidebar"
+    >
       {isOpen ? '← Hide' : '☰ Menu'}
     </button>
   );

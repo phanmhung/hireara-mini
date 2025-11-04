@@ -10,6 +10,16 @@ interface MainContentProps {
   onIconClick: () => void;
 }
 
+/**
+ * Main content component that displays the React icon with rotation and scaling features.
+ *
+ * @param props - Component props
+ * @param props.iconSize - Current icon size in pixels
+ * @param props.rotationState - Current rotation state (angle and direction)
+ * @param props.isRotationEnabled - Whether rotation is enabled
+ * @param props.isScalingEnabled - Whether scaling is enabled
+ * @param props.onIconClick - Click handler for the icon
+ */
 export const MainContent = ({
   iconSize,
   rotationState,
@@ -22,8 +32,8 @@ export const MainContent = ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '100vh',
-    width: '100vw',
+    minHeight: '100%',
+    width: '100%',
     gap: '2rem',
     position: 'relative',
   };
