@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import type { RefObject } from 'react';
 import type { Position, IdleTimerState } from '../types';
 import { IDLE_TIMER_CONFIG } from '../constants';
 import { hasMouseMoved } from '../utils/calculations';
@@ -38,9 +39,9 @@ const isPositionOnPage = (pos: Position): boolean => {
  */
 const handleMouseMove = (
   e: MouseEvent,
-  lastMousePosRef: React.MutableRefObject<Position>,
-  lastMouseMoveRef: React.MutableRefObject<number>,
-  isMouseOnPageRef: React.MutableRefObject<boolean>,
+  lastMousePosRef: RefObject<Position>,
+  lastMouseMoveRef: RefObject<number>,
+  isMouseOnPageRef: RefObject<boolean>,
   setIsMouseOnPage: (value: boolean) => void,
   setIdleTime: (value: number) => void
 ): void => {
@@ -88,7 +89,7 @@ const handleVisibilityChange = (
   documentHidden: boolean,
   setIsMouseOnPage: (value: boolean) => void,
   setIdleTime: (value: number) => void,
-  lastMouseMoveRef: React.MutableRefObject<number>
+  lastMouseMoveRef: RefObject<number>
 ): void => {
   if (documentHidden) {
     setIsMouseOnPage(false);
@@ -148,6 +149,11 @@ export const useIdleTimer = ({ enabled }: UseIdleTimerOptions): UseIdleTimerRetu
       }
       return;
     }
+
+    lastMouseMoveRef.current = Date.now();
+    setIdleTime(0);
+    setIsMouseOnPage(true);
+    isMouseOnPageRef.current = true;
 
     const handleMouseMoveWithTracking = (e: MouseEvent) => {
       handleMouseMove(
