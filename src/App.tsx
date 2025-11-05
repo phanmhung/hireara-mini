@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { SidebarToggle } from './components/SidebarToggle';
-import { IdleTimerHeader } from './components/IdleTimerHeader';
 import { MainContent } from './components/MainContent';
 import { useRotation } from './hooks/useRotation';
 import { useScaling } from './hooks/useScaling';
@@ -51,13 +50,14 @@ function App() {
         onToggle={handleToggleFeature}
       />
       <SidebarToggle isOpen={sidebarOpen} onToggle={handleSidebarToggle} />
-      <IdleTimerHeader idleTime={idleState.idleTime} isEnabled={idle} />
       <MainContent
         iconSize={iconSize}
         rotationState={rotationState}
         isRotationEnabled={rotation}
         isScalingEnabled={scaling}
         onIconClick={handleIconClick}
+        idleTime={idleState.idleTime}
+        isIdleEnabled={idle}
       />
     </>
   );

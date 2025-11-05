@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { ReactIcon } from '../ReactIcon';
+import { IdleTimerText } from '../IdleTimerText';
 import type { RotationState } from '../../types';
 
 interface MainContentProps {
@@ -8,6 +9,8 @@ interface MainContentProps {
   isRotationEnabled: boolean;
   isScalingEnabled: boolean;
   onIconClick: () => void;
+  idleTime: number;
+  isIdleEnabled: boolean;
 }
 
 /**
@@ -19,6 +22,8 @@ interface MainContentProps {
  * @param props.isRotationEnabled - Whether rotation is enabled
  * @param props.isScalingEnabled - Whether scaling is enabled
  * @param props.onIconClick - Click handler for the icon
+ * @param props.idleTime - Current idle time in seconds
+ * @param props.isIdleEnabled - Whether idle timer is enabled
  */
 export const MainContent = ({
   iconSize,
@@ -26,6 +31,8 @@ export const MainContent = ({
   isRotationEnabled,
   isScalingEnabled,
   onIconClick,
+  idleTime,
+  isIdleEnabled,
 }: MainContentProps) => {
   const containerStyle: CSSProperties = {
     display: 'flex',
@@ -47,6 +54,7 @@ export const MainContent = ({
         isScalingEnabled={isScalingEnabled}
         onClick={onIconClick}
       />
+      <IdleTimerText idleTime={idleTime} isEnabled={isIdleEnabled} />
     </div>
   );
 };
